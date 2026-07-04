@@ -1,0 +1,249 @@
+--overall funnel conversion--
+SELECT
+SUM(product_view) AS product_views,
+SUM(add_to_cart) AS add_to_cart,
+SUM(checkout) AS checkout,
+SUM(payment) AS payments,
+SUM(purchase) AS purchases
+FROM user_journey_funnel;
+
+
+--funnel conversion %--
+SELECT
+ROUND(100.0 * SUM(add_to_cart) / SUM(product_view),2) AS add_to_cart_rate,
+ROUND(100.0 * SUM(checkout) / SUM(add_to_cart),2) AS checkout_rate,
+ROUND(100.0 * SUM(payment) / SUM(checkout),2) AS payment_rate,
+ROUND(100.0 * SUM(purchase) / SUM(payment),2) AS purchase_rate
+FROM user_journey_funnel;
+
+
+--revenue by category--
+SELECT
+product_category,
+ROUND(SUM(cart_value),2) AS revenue
+FROM user_journey_funnel
+WHERE purchase = 1
+GROUP BY product_category
+ORDER BY revenue DESC;
+
+
+--revenue by city--
+SELECT
+city,
+ROUND(SUM(cart_value),2) AS revenue
+FROM user_journey_funnel
+WHERE purchase = 1
+GROUP BY city
+ORDER BY revenue DESC;
+
+--device wise conversion rate--
+select device,count(*) as total_users,
+sum(purchase) as purchases,
+round(100.0 * sum(purchase) /count(*),2) as conversion_rate
+from user_journey_funnel
+group by device
+order by conversion_rate desc;
+
+
+--traffic source conversion--
+select traffic_source ,count(*) as visitors,
+sum(purchase) as purchases,
+round(100.0 * sum(purchase) /count(*),2) as conversion_rate
+from user_journey_funnel
+group by traffic_source
+order by conversion_rate desc;
+
+
+--product category performance--
+select product_category,count(*) as visitors,
+sum(purchase) as purchases,
+round(100.0 * sum(purchase) /count(*),2) as conversion_rate
+from user_journey_funnel
+group by product_category
+order by conversion_rate desc;
+
+
+
+--avg cart value by category--
+select product_category,
+round(avg(cart_value),2) as avg_cart_value
+from user_journey_funnel
+group by product_category
+order by avg_cart_value desc;
+
+
+--top 10 product by revenue--
+select product_name,
+round(sum(cart_value),2) as revenue
+from user_journey_funnel
+where purchase=1
+group by product_name
+order by revenue desc
+limit 10;
+
+
+
+--customer satisfaction--
+select customer_satisfaction, 
+count(*) as users
+from user_journey_funnel
+where customer_satisfaction is not null
+group by customer_satisfaction
+order by customer_satisfaction;
+
+
+--payment method analysis --
+select payment_method,
+count(*) as orders
+from user_journey_funnel
+where purchase=1
+group by payment_method
+order by orders desc;
+
+--order status--
+select order_status,count(*) as orders
+from user_journey_funnel
+group by order_status
+order by orders desc;
+
+
+--city wise purchases--
+select city ,sum(purchase) as purchases
+from user_journey_funnel
+group by city
+order by purchases desc;
+
+
+--avg session duration--
+select round(avg(session_duration),2) as avg_session_duration_seconds,
+round(avg(time_spent_minutes),2) as avg_time_spent_minutes
+from user_journey_funnel;
+
+
+
+--phase 2--
+--monthly revenue trend--
+
+select date_trunc('month',visit_date)as month,
+round(sum(cart_value),2) as revenue
+from user_journey_funnel
+where purchase=1
+group by month
+order by month;
+
+
+--monthly purchase--
+select date_trunc('month',visit_date)as month,
+sum(purchase) as total_purchases
+from user_journey_funnel
+where purchase=1
+group by month
+order by month;
+
+
+--age group performance--
+SELECT
+age_group,
+COUNT(*) AS users,
+SUM(purchase) AS purchases,
+ROUND(100.0 * SUM(purchase) / COUNT(*),2) AS conversion_rate
+FROM user_journey_funnel
+GROUP BY age_group
+ORDER BY conversion_rate DESC;
+
+--gender performance--
+SELECT
+gender,
+COUNT(*) AS users,
+SUM(purchase) AS purchases,
+ROUND(100.0 * SUM(purchase) / COUNT(*),2) AS conversion_rate
+FROM user_journey_funnel
+GROUP BY gender;
+
+
+--discount analysis--
+SELECT
+discount,
+COUNT(*) AS orders,
+ROUND(AVG(cart_value),2) AS avg_cart_value,
+SUM(purchase) AS purchases
+FROM user_journey_funnel
+GROUP BY discount
+ORDER BY discount;
+
+
+--top cities by revenue--
+SELECT
+city,
+ROUND(SUM(cart_value),2) AS revenue
+FROM user_journey_funnel
+WHERE purchase = 1
+GROUP BY city
+ORDER BY revenue DESC
+LIMIT 10;
+
+
+--cart abondonmenet--
+SELECT
+COUNT(*) FILTER (WHERE Add_to_cart = 1 AND purchase = 0) AS abandoned_carts,
+COUNT(*) FILTER (WHERE purchase = 1) AS completed_orders
+from user_journey_funnel;
+
+
+
+--top 10 highest revenue product--
+select product_name,round(sum(cart_value),2) as total_revenue
+from user_journey_funnel
+where purchase=1
+group by product_name
+order by total_revenue desc
+limit 10;
+
+--top 5 cities by purchases--
+select city,sum(purchase) as purchases
+from user_journey_funnel
+where purchase=1
+group by city
+order by purchases desc
+limit 5;
+
+
+SELECT
+city,
+SUM(purchase) AS total_purchases
+FROM user_journey_funnel
+GROUP BY city
+ORDER BY total_purchases DESC
+LIMIT 5;
+
+--best performing traffic source--
+select traffic_source,sum(purchase) as purchases,
+round(avg(cart_value),2) as avg_cart_value
+from user_journey_funnel
+group by traffic_source
+order by purchases desc;
+
+
+--rank cities by revenue(wf)--
+select city,round(sum(cart_value),2) as revenue,
+rank()over(order by sum(cart_value)desc)as city_rank
+from user_journey_funnel
+where purchase=1
+group by city;
+
+
+--rank product by revenue(wf)--
+select product_name,round(sum(cart_value),2) as revenue,
+dense_rank()over(order by sum(cart_value) desc) as product_rank
+from user_journey_funnel
+where purchase=1
+group by product_name;
+
+
+--cte--
+with category_sales as(select product_category,sum(cart_value)as revenue
+from user_journey_funnel
+where purchase=1
+group by product_category)
+select * from category_sales
+order by revenue desc;

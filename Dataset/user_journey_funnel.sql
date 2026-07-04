@@ -1,0 +1,32 @@
+DROP TABLE IF EXISTS user_journey_funnel;
+
+CREATE TABLE user_journey_funnel (
+    User_ID VARCHAR(20),
+    Session_ID VARCHAR(20),
+    Visit_Date DATE,
+    Visit_Time TIME,
+    Device VARCHAR(20),
+    Traffic_Source VARCHAR(50),
+    City VARCHAR(50),
+    Age_Group VARCHAR(20),
+    Gender VARCHAR(20),
+    Product_Category VARCHAR(50),
+    Product_Name VARCHAR(100),
+    Product_Price NUMERIC,
+    Discount NUMERIC,
+    Cart_Value NUMERIC,
+    Pages_Viewed INT,
+    Session_Duration INT,
+    Time_Spent_Minutes NUMERIC,
+    Product_View INT,
+    Add_To_Cart INT,
+    Checkout INT,
+    Payment INT,
+    Purchase INT,
+    Order_Status VARCHAR(30),
+    Payment_Method VARCHAR(30),
+    Customer_Satisfaction NUMERIC
+);
+
+select *  from user_journey_funnel
+limit 10;

@@ -1,0 +1,38 @@
+--null values check--
+SELECT
+COUNT(*) FILTER (WHERE user_id IS NULL) AS user_id_null,
+COUNT(*) FILTER (WHERE session_id IS NULL) AS session_id_null,
+COUNT(*) FILTER (WHERE product_name IS NULL) AS product_name_null,
+COUNT(*) FILTER (WHERE customer_satisfaction IS NULL) AS rating_null
+FROM user_journey_funnel;
+
+--duplicate sessions--
+select session_id,count(*)
+from user_journey_funnel
+group by session_id
+having count(*) > 1;
+
+--date range--
+SELECT
+MIN(visit_date) AS first_date,
+MAX(visit_date) AS last_date
+FROM user_journey_funnel;
+
+--device distribution--
+SELECT
+device,
+COUNT(*) AS users
+FROM user_journey_funnel
+GROUP BY device
+ORDER BY users DESC;
+
+
+
+--traffic source distribution--
+SELECT
+traffic_source,
+COUNT(*) AS users
+FROM user_journey_funnel
+GROUP BY traffic_source
+ORDER BY users DESC;
+
