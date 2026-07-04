@@ -253,13 +253,13 @@ User_Journey_Funnel_Analysis
 
 ## Executive Overview
 
-(Add Page 1 Screenshot Here)
+![Dashboard Page 1](Images/Dashboard%20page%201.png)
 
 ---
 
 ## User Journey Funnel Analysis
 
-(Add Page 2 Screenshot Here)
+![Dashboard Page 2](Images/Dashboard%20page%202.png)
 
 ---
 
